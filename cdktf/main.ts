@@ -6,17 +6,19 @@ class MyStack extends TerraformStack {
   constructor(scope: Construct, id: string) {
     super(scope, id);
 
-    new provider.HelmProvider(scope, id, {
+    new provider.HelmProvider(this, `${id}-helm-provider`, {
       kubernetes: {
         configPath: "~/.kube/config",
       },
     });
 
-    new release.Release(scope, id, {
+    new release.Release(this, `${id}-helm-release`, {
       name: "stackgres-operator",
       namespace: "stackgres",
-      chart:
-        "https://stackgres.io/downloads/stackgres-k8s/stackgres/latest/helm/stackgres-operator.tgz",
+      chart: "stackgres-operator",
+      version: "1.5.0",
+      repository:
+        "https://stackgres.io/downloads/stackgres-k8s/stackgres/helm/",
       createNamespace: true,
       set: [
         {
@@ -24,7 +26,14 @@ class MyStack extends TerraformStack {
           value: "ClusterIP",
           type: "string",
         },
+        {
+          name: "cert.resetCerts",
+          value: "true",
+          type: "auto",
+        },
       ],
+      wait: true,
+      waitForJobs: true,
     });
   }
 }
