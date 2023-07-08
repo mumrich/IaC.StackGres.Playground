@@ -46,17 +46,19 @@ class MyStack extends TerraformStack {
           type: "auto",
         },
       ],
-      wait: true,
+      wait: false,
       waitForJobs: true,
     });
 
     new Shell(this, idPrefixer("operator-check"), {
+      suppressConsole: true,
       dependsOn: [helmRelase],
       commandUnix: `kubectl wait -n ${k8sNamespace} deployment/stackgres-operator --for condition=Available`,
       failOnNonzeroExitCode: true,
     });
 
     new Shell(this, idPrefixer("restapi-check"), {
+      suppressConsole: true,
       dependsOn: [helmRelase],
       commandUnix: `kubectl wait -n ${k8sNamespace} deployment/stackgres-restapi --for condition=Available`,
       failOnNonzeroExitCode: true,
@@ -66,6 +68,7 @@ class MyStack extends TerraformStack {
       this,
       idPrefixer("credentials-username"),
       {
+        suppressConsole: true,
         dependsOn: [helmRelase],
         commandUnix: `kubectl get secret -n ${k8sNamespace} stackgres-restapi --template '{{ .data.k8sUsername | base64decode }}'`,
       }
@@ -75,12 +78,14 @@ class MyStack extends TerraformStack {
       this,
       idPrefixer("credentials-password"),
       {
+        suppressConsole: true,
         dependsOn: [helmRelase],
         commandUnix: `kubectl get secret -n ${k8sNamespace} stackgres-restapi --template '{{ .data.clearPassword | base64decode }}'`,
       }
     );
 
     const notes = new Shell(this, idPrefixer("notes"), {
+      suppressConsole: true,
       dependsOn: [helmRelase],
       commandUnix: `helm get notes -n ${k8sNamespace} stackgres-operator`,
     });
