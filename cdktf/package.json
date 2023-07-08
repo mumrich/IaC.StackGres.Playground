@@ -20,8 +20,10 @@
     "node": ">=16.0"
   },
   "dependencies": {
+    "@cdktf/provider-external": "^7.0.0",
     "@cdktf/provider-helm": "^7.0.0",
     "@cdktf/provider-kubernetes": "7.0.0",
+    "@cdktf/provider-null": "^7.0.0",
     "cdktf": "^0.17.1",
     "constructs": "^10.2.69"
   },
