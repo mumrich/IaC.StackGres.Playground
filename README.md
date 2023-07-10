@@ -7,8 +7,13 @@ cd cdktf
 cdktf get
 
 # deploy
-cdktf deploy --auto-approve
+cdktf deploy <stack-name> --auto-approve
 
 # destroy
-cdktf destroy --auto-approve
+cdktf destroy <stack-name> --auto-approve
 ```
+
+## Available TF Stacks
+
+- starrocks
+- stackgres
