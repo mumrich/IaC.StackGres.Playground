@@ -1,8 +1,9 @@
 import { Construct } from "constructs";
 import { HelmProvider } from "@cdktf/provider-helm/lib/provider";
 import { Release as HelmRelease } from "@cdktf/provider-helm/lib/release";
-import { Shell } from "../.gen/modules/shell";
-import { TerraformOutput, TerraformStack, TerraformVariable } from "cdktf";
+import { Fn, TerraformOutput, TerraformStack, TerraformVariable } from "cdktf";
+import { DataKubernetesSecretV1 } from "@cdktf/provider-kubernetes/lib/data-kubernetes-secret-v1";
+import { KubernetesProvider } from "@cdktf/provider-kubernetes/lib/provider";
 
 export default class StackGres extends TerraformStack {
   constructor(scope: Construct, id: string) {
@@ -20,9 +21,17 @@ export default class StackGres extends TerraformStack {
       default: "1.5.0",
     });
 
+    const k8sProvider = new KubernetesProvider(
+      this,
+      idPrefixer("k8s-provider"),
+      {
+        configPath: "~/.kube/config",
+      }
+    );
+
     new HelmProvider(this, idPrefixer("helm-provider"), {
       kubernetes: {
-        configPath: "~/.kube/config",
+        configPath: k8sProvider.configPath,
       },
     });
 
@@ -50,56 +59,27 @@ export default class StackGres extends TerraformStack {
       waitForJobs: true,
     });
 
-    new Shell(this, idPrefixer("operator-check"), {
-      suppressConsole: true,
-      dependsOn: [helmRelase],
-      commandUnix: `kubectl wait -n ${k8sNamespace} deployment/stackgres-operator --for condition=Available`,
-      failOnNonzeroExitCode: true,
-    });
-
-    new Shell(this, idPrefixer("restapi-check"), {
-      suppressConsole: true,
-      dependsOn: [helmRelase],
-      commandUnix: `kubectl wait -n ${k8sNamespace} deployment/stackgres-restapi --for condition=Available`,
-      failOnNonzeroExitCode: true,
-    });
-
-    const credentialsUsername = new Shell(
+    const credentials = new DataKubernetesSecretV1(
       this,
-      idPrefixer("credentials-username"),
+      idPrefixer("credentials"),
       {
-        suppressConsole: true,
         dependsOn: [helmRelase],
-        commandUnix: `kubectl get secret -n ${k8sNamespace} stackgres-restapi --template '{{ .data.k8sUsername | base64decode }}'`,
+        metadata: {
+          name: "stackgres-restapi",
+          namespace: k8sNamespace,
+          labels: {
+            name: helmRelase.name,
+          },
+        },
       }
     );
-
-    const credentialsPassword = new Shell(
-      this,
-      idPrefixer("credentials-password"),
-      {
-        suppressConsole: true,
-        dependsOn: [helmRelase],
-        commandUnix: `kubectl get secret -n ${k8sNamespace} stackgres-restapi --template '{{ .data.clearPassword | base64decode }}'`,
-      }
-    );
-
-    const notes = new Shell(this, idPrefixer("notes"), {
-      suppressConsole: true,
-      dependsOn: [helmRelase],
-      commandUnix: `helm get notes -n ${k8sNamespace} ${chartName}`,
-    });
 
     new TerraformOutput(this, "credentials-username", {
-      value: credentialsUsername.stdoutOutput,
+      value: Fn.nonsensitive(credentials.data.lookup("k8sUsername")),
     });
 
     new TerraformOutput(this, "credentials-password", {
-      value: credentialsPassword.stdoutOutput,
-    });
-
-    new TerraformOutput(this, "notes", {
-      value: notes.stdoutOutput,
+      value: Fn.nonsensitive(credentials.data.lookup("clearPassword")),
     });
   }
 }
