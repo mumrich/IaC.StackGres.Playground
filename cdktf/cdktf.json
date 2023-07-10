@@ -3,13 +3,13 @@
   "app": "npx ts-node main.ts",
   "projectId": "eab021b0-b4a4-4a40-86f7-c738239a8118",
   "sendCrashReports": "false",
-  "terraformProviders": [],
-  "terraformModules": [
+  "terraformProviders": [
     {
-      "name": "shell",
-      "source": "Invicton-Labs/shell-data/external",
-      "version": "0.4.2"
+      "name": "kubectl",
+      "source": "gavinbunney/kubectl",
+      "version": "1.14.0"
     }
   ],
+  "terraformModules": [],
   "context": {}
 }
