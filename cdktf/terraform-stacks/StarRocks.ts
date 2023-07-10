@@ -1,8 +1,7 @@
 import { Construct } from "constructs";
 import { HelmProvider } from "@cdktf/provider-helm/lib/provider";
 import { Release as HelmRelease } from "@cdktf/provider-helm/lib/release";
-import { Shell } from "../.gen/modules/shell";
-import { TerraformOutput, TerraformStack, TerraformVariable } from "cdktf";
+import { TerraformStack, TerraformVariable } from "cdktf";
 
 export default class StarRocks extends TerraformStack {
   constructor(scope: Construct, id: string) {
@@ -26,7 +25,7 @@ export default class StarRocks extends TerraformStack {
       },
     });
 
-    const helmRelase = new HelmRelease(this, idPrefixer("helm-release"), {
+    new HelmRelease(this, idPrefixer("helm-release"), {
       name: chartName,
       namespace: k8sNamespace,
       chart: chartName,
@@ -35,16 +34,6 @@ export default class StarRocks extends TerraformStack {
       createNamespace: true,
       wait: false,
       waitForJobs: true,
-    });
-
-    const notes = new Shell(this, idPrefixer("notes"), {
-      suppressConsole: true,
-      dependsOn: [helmRelase],
-      commandUnix: `helm get notes -n ${k8sNamespace} ${chartName}`,
-    });
-
-    new TerraformOutput(this, "notes", {
-      value: notes.stdoutOutput,
     });
   }
 }
