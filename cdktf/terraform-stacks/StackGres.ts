@@ -1,8 +1,8 @@
 import { Construct } from "constructs";
-import { TerraformOutput, TerraformStack, TerraformVariable } from "cdktf";
 import { HelmProvider } from "@cdktf/provider-helm/lib/provider";
 import { Release as HelmRelease } from "@cdktf/provider-helm/lib/release";
-import { Shell } from "./.gen/modules/shell";
+import { Shell } from "../.gen/modules/shell";
+import { TerraformOutput, TerraformStack, TerraformVariable } from "cdktf";
 
 export default class StackGres extends TerraformStack {
   constructor(scope: Construct, id: string) {
@@ -87,7 +87,7 @@ export default class StackGres extends TerraformStack {
     const notes = new Shell(this, idPrefixer("notes"), {
       suppressConsole: true,
       dependsOn: [helmRelase],
-      commandUnix: `helm get notes -n ${k8sNamespace} stackgres-operator`,
+      commandUnix: `helm get notes -n ${k8sNamespace} ${chartName}`,
     });
 
     new TerraformOutput(this, "credentials-username", {
