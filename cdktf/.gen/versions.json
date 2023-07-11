@@ -1,3 +1,4 @@
 {
-  "registry.terraform.io/gavinbunney/kubectl": "1.14.0"
+  "registry.terraform.io/gavinbunney/kubectl": "1.14.0",
+  "registry.terraform.io/pvotal-tech/k3d": "0.0.6"
 }
