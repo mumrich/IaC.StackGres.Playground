@@ -1,5 +1,11 @@
 # IaC.StackGres.Playground
 
+## Prerequisites
+
+- `choco install gsudo pwsh -y`
+
+## Using CDKTF
+
 ```bash
 cd cdktf
 

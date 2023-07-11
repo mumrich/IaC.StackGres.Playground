@@ -20,13 +20,13 @@ export default class StarRocks extends TerraformStack {
         this,
         idPrefixer("yaml-files"),
         {
-          pattern: "./assets/*.yaml",
+          pattern: "./terraform-stacks/assets/*.yaml",
         }
       );
 
     const fileListIterator = TerraformIterator.fromList(yamlfiles.matches);
 
-    new kubectl.manifest.Manifest(this, idPrefixer("operator-manifest"), {
+    new kubectl.manifest.Manifest(this, idPrefixer("starrocks-manifest"), {
       forEach: fileListIterator,
       yamlBody: Fn.file(fileListIterator.value),
     });
