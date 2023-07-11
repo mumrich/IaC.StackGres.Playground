@@ -1,9 +1,9 @@
 import { Construct } from "constructs";
-import { HelmProvider } from "@cdktf/provider-helm/lib/provider";
 import { Release as HelmRelease } from "@cdktf/provider-helm/lib/release";
 import { Fn, TerraformOutput, TerraformStack, TerraformVariable } from "cdktf";
 import { DataKubernetesSecretV1 } from "@cdktf/provider-kubernetes/lib/data-kubernetes-secret-v1";
-import { KubernetesProvider } from "@cdktf/provider-kubernetes/lib/provider";
+import { useHelmProvider } from "../helpers/HelmHelper";
+import { useK8sProvider } from "../helpers/K8sHelper";
 
 export default class StackGres extends TerraformStack {
   constructor(scope: Construct, id: string) {
@@ -21,19 +21,8 @@ export default class StackGres extends TerraformStack {
       default: "1.5.0",
     });
 
-    const k8sProvider = new KubernetesProvider(
-      this,
-      idPrefixer("k8s-provider"),
-      {
-        configPath: "~/.kube/config",
-      }
-    );
-
-    new HelmProvider(this, idPrefixer("helm-provider"), {
-      kubernetes: {
-        configPath: k8sProvider.configPath,
-      },
-    });
+    useK8sProvider(this, idPrefixer("k8s-provider"));
+    useHelmProvider(this, idPrefixer("helm-provider"));
 
     const helmRelase = new HelmRelease(this, idPrefixer("helm-release"), {
       name: chartName,
