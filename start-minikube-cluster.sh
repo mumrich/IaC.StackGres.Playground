@@ -28,13 +28,16 @@ minikube kubectl -- patch storageclass csi-hostpath-sc \
 
 # dns service for ingress controllers running on cluster
 minikube addons enable ingress
-minikube addons enable ingress-dns
-sudo pwsh \
-    -File "./add-dns-server-to-host.ps1" \
-    -cluster_domain_name "$CLUSTER_DOMAIN_NAME" \
-    -name_servers "$(minikube ip)"
+# minikube addons enable ingress-dns
+# sudo pwsh \
+#     -File "./add-dns-server-to-host.ps1" \
+#     -cluster_domain_name "$CLUSTER_DOMAIN_NAME" \
+#     -name_servers "$(minikube ip)"
+minikube addons enable metallb
 
 # report on addons
 minikube addons list -d
 
 # minikube kubectl -- apply -f https://raw.githubusercontent.com/kubernetes/minikube/master/deploy/addons/ingress-dns/example/example.yaml
+
+# minikube tunnel -p $PROFILE
