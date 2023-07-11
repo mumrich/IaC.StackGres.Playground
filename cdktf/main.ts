@@ -1,12 +1,12 @@
 import { App } from "cdktf";
-import StackGres from "./terraform-stacks/StackGres";
-import StarRocks from "./terraform-stacks/StarRocks";
+import StackGres from "./terraform-stacks/StackGresOperator";
+import StarRocks from "./terraform-stacks/StarRocksOperator";
 import K3dCluster from "./terraform-stacks/K3dCluster";
 
 const app = new App();
 
-new StackGres(app, "stackgres");
-new StarRocks(app, "starrocks");
 new K3dCluster(app, "k3d-cluster");
+new StackGres(app, "stackgres-operator");
+new StarRocks(app, "starrocks-operator");
 
 app.synth();

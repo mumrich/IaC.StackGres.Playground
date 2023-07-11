@@ -3,7 +3,7 @@ import { TerraformIterator, Fn, TerraformStack } from "cdktf";
 import { KubectlProvider } from "../.gen/providers/kubectl/provider";
 import * as kubectl from "../.gen/providers/kubectl";
 
-export default class StarRocks extends TerraformStack {
+export default class StarRocksOperator extends TerraformStack {
   constructor(scope: Construct, id: string) {
     super(scope, id);
 

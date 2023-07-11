@@ -43,8 +43,13 @@ export default class K3dCluster extends TerraformStack {
       },
       port: [
         {
-          hostPort: 8081,
+          hostPort: 80,
           containerPort: 80,
+          nodeFilters: ["loadbalancer"],
+        },
+        {
+          hostPort: 443,
+          containerPort: 443,
           nodeFilters: ["loadbalancer"],
         },
       ],

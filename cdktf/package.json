@@ -6,17 +6,20 @@
   "license": "MPL-2.0",
   "private": true,
   "scripts": {
-    "deploy-starrocks": "cdktf deploy starrocks --auto-approve",
-    "deploy-k3d-cluster": "cdktf deploy k3d-cluster --auto-approve",
-    "get": "cdktf get",
     "build": "tsc",
-    "synth": "cdktf synth",
     "compile": "tsc --pretty",
-    "watch": "tsc -w",
+    "deploy-k3d-cluster": "cdktf deploy k3d-cluster --auto-approve",
+    "deploy-stackgres-operator": "cdktf deploy stackgres-operator --auto-approve",
+    "deploy-starrocks-operator": "cdktf deploy starrocks-operator --auto-approve",
+    "destroy-stackgres-operator": "cdktf destroy stackgres-operator --auto-approve",
+    "destroy-starrocks-operator": "cdktf destroy starrocks-operator --auto-approve",
+    "get": "cdktf get",
+    "synth": "cdktf synth",
     "test": "jest",
     "test:watch": "jest --watch",
     "upgrade": "npm i cdktf@latest cdktf-cli@latest",
-    "upgrade:next": "npm i cdktf@next cdktf-cli@next"
+    "upgrade:next": "npm i cdktf@next cdktf-cli@next",
+    "watch": "tsc -w"
   },
   "engines": {
     "node": ">=16.0"

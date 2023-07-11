@@ -1,11 +1,12 @@
 import { Construct } from "constructs";
-import { Release as HelmRelease } from "@cdktf/provider-helm/lib/release";
-import { Fn, TerraformOutput, TerraformStack, TerraformVariable } from "cdktf";
 import { DataKubernetesSecretV1 } from "@cdktf/provider-kubernetes/lib/data-kubernetes-secret-v1";
+import { Fn, TerraformOutput, TerraformStack, TerraformVariable } from "cdktf";
+import { IngressV1 } from "@cdktf/provider-kubernetes/lib/ingress-v1";
+import { Release as HelmRelease } from "@cdktf/provider-helm/lib/release";
 import { useHelmProvider } from "../helpers/HelmHelper";
 import { useK8sProvider } from "../helpers/K8sHelper";
 
-export default class StackGres extends TerraformStack {
+export default class StackGresOperator extends TerraformStack {
   constructor(scope: Construct, id: string) {
     super(scope, id);
 
@@ -46,6 +47,34 @@ export default class StackGres extends TerraformStack {
       ],
       wait: false,
       waitForJobs: true,
+    });
+
+    new IngressV1(this, idPrefixer("stackgres-admin-ui-ingress"), {
+      metadata: {
+        name: "stackgress-admin-ui-ingresss",
+        namespace: k8sNamespace,
+      },
+      spec: {
+        rule: [
+          {
+            host: "stackgress.multikube",
+            http: {
+              path: [
+                {
+                  backend: {
+                    service: {
+                      name: "stackgres-restapi",
+                      port: {
+                        name: "http",
+                      },
+                    },
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
     });
 
     const credentials = new DataKubernetesSecretV1(
