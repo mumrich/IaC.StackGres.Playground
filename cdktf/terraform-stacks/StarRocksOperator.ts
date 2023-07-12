@@ -15,6 +15,10 @@ export default class StarRocksOperator extends TerraformStack {
       configPath: "~/.kube/config",
     });
 
+    // const foo = new kubectl.dataKubectlFileDocuments.DataKubectlFileDocuments(this, "crds", {
+    //   content: Fn.file("")
+    // })
+
     const yamlfiles =
       new kubectl.dataKubectlFilenameList.DataKubectlFilenameList(
         this,

@@ -49,23 +49,33 @@ export default class StackGresOperator extends TerraformStack {
       waitForJobs: true,
     });
 
+    const hostname = "stackgress.multikube";
+
     new IngressV1(this, idPrefixer("stackgres-admin-ui-ingress"), {
+      dependsOn: [helmRelase],
       metadata: {
         name: "stackgress-admin-ui-ingresss",
         namespace: k8sNamespace,
       },
       spec: {
+        tls: [
+          {
+            hosts: [hostname],
+          },
+        ],
         rule: [
           {
-            host: "stackgress.multikube",
+            host: hostname,
             http: {
               path: [
                 {
+                  path: "/",
+                  pathType: "Prefix",
                   backend: {
                     service: {
                       name: "stackgres-restapi",
                       port: {
-                        name: "http",
+                        number: 443,
                       },
                     },
                   },

@@ -1,12 +1,11 @@
 import { Cluster } from "../.gen/providers/k3d/cluster";
 import { Construct } from "constructs/lib/construct";
 import { K3DProvider } from "../.gen/providers/k3d/provider";
-import { Registry } from "../.gen/providers/k3d/registry";
 import { Release as HelmRelease } from "@cdktf/provider-helm/lib/release";
 import { TerraformStack } from "cdktf/lib/terraform-stack";
 import { TerraformVariable } from "cdktf";
-import { useTfVar } from "../helpers/VarHelper";
 import { useHelmProvider } from "../helpers/HelmHelper";
+import { useTfVar } from "../helpers/VarHelper";
 
 export default class K3dCluster extends TerraformStack {
   constructor(scope: Construct, id: string) {
@@ -29,7 +28,7 @@ export default class K3dCluster extends TerraformStack {
 
     new K3DProvider(this, "k3d-provider");
 
-    new Cluster(this, "k3d-cluster", {
+    const k3dCluster = new Cluster(this, "k3d-cluster", {
       name: clusterName.value,
       servers: nbrServers.value,
       agents: nbrAgents.value,
@@ -58,18 +57,22 @@ export default class K3dCluster extends TerraformStack {
       },
     });
 
-    new Registry(this, "k3d-registry", {
-      name: "my-registry",
-    });
-
     const nginxControllerName = "ingress-nginx";
 
     new HelmRelease(this, "nginx-ingress-controller", {
+      dependsOn: [k3dCluster],
       name: nginxControllerName,
       namespace: nginxControllerName,
       chart: nginxControllerName,
       version: ingressNginxVersion.value,
       repository: "https://kubernetes.github.io/ingress-nginx",
+      set: [
+        {
+          name: "controller.ingressClassResource.default",
+          value: "true",
+          type: "auto",
+        },
+      ],
       createNamespace: true,
       wait: true,
       waitForJobs: true,
