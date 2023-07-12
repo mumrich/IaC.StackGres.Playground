@@ -1,9 +1,12 @@
 import { Cluster } from "../.gen/providers/k3d/cluster";
 import { Construct } from "constructs/lib/construct";
+import { DataK3DCluster } from "../.gen/providers/k3d/data-k3d-cluster";
 import { K3DProvider } from "../.gen/providers/k3d/provider";
 import { Release as HelmRelease } from "@cdktf/provider-helm/lib/release";
+import { Sleep } from "@cdktf/provider-time/lib/sleep";
+import { Fn, TerraformOutput, TerraformVariable } from "cdktf";
 import { TerraformStack } from "cdktf/lib/terraform-stack";
-import { TerraformVariable } from "cdktf";
+import { TimeProvider } from "@cdktf/provider-time/lib/provider";
 import { useHelmProvider } from "../helpers/HelmHelper";
 import { useTfVar } from "../helpers/VarHelper";
 
@@ -25,7 +28,7 @@ export default class K3dCluster extends TerraformStack {
     );
 
     useHelmProvider(this);
-
+    new TimeProvider(this, "time-provider");
     new K3DProvider(this, "k3d-provider");
 
     const k3dCluster = new Cluster(this, "k3d-cluster", {
@@ -54,13 +57,24 @@ export default class K3dCluster extends TerraformStack {
       ],
       kubeconfig: {
         updateDefaultKubeconfig: true,
+        switchCurrentContext: true,
       },
+    });
+
+    const waitForK3d = new Sleep(this, "wait-for-k3d", {
+      dependsOn: [k3dCluster],
+      createDuration: "30s",
+    });
+
+    const datK3dCluster = new DataK3DCluster(this, "data-k3d-cluster", {
+      name: k3dCluster.name,
+      dependsOn: [waitForK3d],
     });
 
     const nginxControllerName = "ingress-nginx";
 
     new HelmRelease(this, "nginx-ingress-controller", {
-      dependsOn: [k3dCluster],
+      dependsOn: [waitForK3d],
       name: nginxControllerName,
       namespace: nginxControllerName,
       chart: nginxControllerName,
@@ -76,6 +90,10 @@ export default class K3dCluster extends TerraformStack {
       createNamespace: true,
       wait: true,
       waitForJobs: true,
+    });
+
+    new TerraformOutput(this, "kubeconfig", {
+      value: Fn.nonsensitive(datK3dCluster.kubeconfigRaw),
     });
   }
 }

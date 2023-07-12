@@ -1,0 +1,2 @@
+Operator from
+https://github.com/StarRocks/starrocks-kubernetes-operator

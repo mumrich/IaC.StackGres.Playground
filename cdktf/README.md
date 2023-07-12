@@ -1,8 +1,10 @@
+# CDKTF
+
 ========================================================================================================
 
   Your cdktf typescript project is ready!
 
-  cat help                Print this message
+  cat README.md           Print this message
 
   Compile:
     npm run get           Import/update Terraform providers and modules (you should check-in this directory)
@@ -33,10 +35,10 @@
  Use Providers:
 
   You can add prebuilt providers (if available) or locally generated ones using the add command:
-  
+
   cdktf provider add "aws@~>3.0" null kreuzwerker/docker
 
-  You can find all prebuilt providers on npm: https://www.npmjs.com/search?q=keywords:cdktf
+  You can find all prebuilt providers on npm: <https://www.npmjs.com/search?q=keywords:cdktf>
   You can also install these providers directly through npm:
 
   npm install @cdktf/provider-aws
@@ -46,6 +48,6 @@
   npm install @cdktf/provider-github
   npm install @cdktf/provider-null
 
-  You can also build any module or provider locally. Learn more https://cdk.tf/modules-and-providers
+  You can also build any module or provider locally. Learn more <https://cdk.tf/modules-and-providers>
 
 ========================================================================================================

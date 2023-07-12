@@ -10,7 +10,7 @@
     "compile": "tsc --pretty",
     "deploy-k3d-cluster": "cdktf deploy k3d-cluster --auto-approve",
     "deploy-stackgres-operator": "cdktf deploy stackgres-operator --auto-approve",
-    "deploy-starrocks-operator": "cdktf deploy starrocks-operator --auto-approve",
+    "deploy-starrocks-operator": "cdktf deploy starrocks-operator --log-level=DEBUG --auto-approve",
     "destroy-k3d-cluster": "cdktf destroy k3d-cluster --auto-approve",
     "destroy-stackgres-operator": "cdktf destroy stackgres-operator --auto-approve",
     "destroy-starrocks-operator": "cdktf destroy starrocks-operator --auto-approve",
@@ -30,6 +30,7 @@
     "@cdktf/provider-helm": "^7.0.0",
     "@cdktf/provider-kubernetes": "7.0.0",
     "@cdktf/provider-null": "^7.0.0",
+    "@cdktf/provider-time": "^7.0.0",
     "cdktf": "^0.17.1",
     "cdktf-cli": "^0.17.1",
     "constructs": "^10.2.69"

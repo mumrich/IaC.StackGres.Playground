@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "*** Delecte cluster..."
+echo "*** Delete cluster..."
 k3d cluster delete MyCluster
 
 echo "*** Remove all tfstate-files..."

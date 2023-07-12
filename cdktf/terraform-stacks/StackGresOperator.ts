@@ -1,10 +1,11 @@
 import { Construct } from "constructs";
 import { DataKubernetesSecretV1 } from "@cdktf/provider-kubernetes/lib/data-kubernetes-secret-v1";
-import { Fn, TerraformOutput, TerraformStack, TerraformVariable } from "cdktf";
+import { Fn, TerraformOutput, TerraformStack } from "cdktf";
 import { IngressV1 } from "@cdktf/provider-kubernetes/lib/ingress-v1";
 import { Release as HelmRelease } from "@cdktf/provider-helm/lib/release";
 import { useHelmProvider } from "../helpers/HelmHelper";
 import { useK8sProvider } from "../helpers/K8sHelper";
+import { useTfVar } from "../helpers/VarHelper";
 
 export default class StackGresOperator extends TerraformStack {
   constructor(scope: Construct, id: string) {
@@ -14,13 +15,9 @@ export default class StackGresOperator extends TerraformStack {
       return `${id}-${postfix}`;
     }
 
+    const chartVersion = useTfVar(this, "chartVersion", "1.5.0");
     const k8sNamespace = "stackgres";
     const chartName = "stackgres-operator";
-
-    const chartVersion = new TerraformVariable(this, "chartVersion", {
-      type: "string",
-      default: "1.5.0",
-    });
 
     useK8sProvider(this, idPrefixer("k8s-provider"));
     useHelmProvider(this, idPrefixer("helm-provider"));
@@ -45,7 +42,7 @@ export default class StackGresOperator extends TerraformStack {
           type: "auto",
         },
       ],
-      wait: false,
+      wait: true,
       waitForJobs: true,
     });
 

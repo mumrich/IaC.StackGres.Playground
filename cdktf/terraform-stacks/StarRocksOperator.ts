@@ -1,38 +1,23 @@
 import { Construct } from "constructs";
-import { TerraformIterator, Fn, TerraformStack } from "cdktf";
-import { KubectlProvider } from "../.gen/providers/kubectl/provider";
-import * as kubectl from "../.gen/providers/kubectl";
+import { Release as HelmRelease } from "@cdktf/provider-helm/lib/release";
+import { TerraformStack } from "cdktf";
+import { resolve } from "path";
+import { useHelmProvider } from "../helpers/HelmHelper";
 
 export default class StarRocksOperator extends TerraformStack {
   constructor(scope: Construct, id: string) {
     super(scope, id);
 
-    function idPrefixer(postfix: string): string {
-      return `${id}-${postfix}`;
-    }
+    useHelmProvider(this);
 
-    new KubectlProvider(this, idPrefixer("kubectl-provider"), {
-      configPath: "~/.kube/config",
-    });
+    const chartName = "starrocks-operator";
 
-    // const foo = new kubectl.dataKubectlFileDocuments.DataKubectlFileDocuments(this, "crds", {
-    //   content: Fn.file("")
-    // })
-
-    const yamlfiles =
-      new kubectl.dataKubectlFilenameList.DataKubectlFilenameList(
-        this,
-        idPrefixer("yaml-files"),
-        {
-          pattern: "./terraform-stacks/assets/*.yaml",
-        }
-      );
-
-    const fileListIterator = TerraformIterator.fromList(yamlfiles.matches);
-
-    new kubectl.manifest.Manifest(this, idPrefixer("starrocks-manifest"), {
-      forEach: fileListIterator,
-      yamlBody: Fn.file(fileListIterator.value),
+    new HelmRelease(this, "starrocks-operator-release", {
+      name: chartName,
+      chart: resolve(__dirname, `../helm-charts/${chartName}`),
+      createNamespace: true,
+      wait: true,
+      waitForJobs: true,
     });
   }
 }
