@@ -2,6 +2,7 @@
   "cdktf": "0.17.1",
   "providers": {
     "k3d": "0.0.6",
-    "kubectl": "1.14.0"
+    "kubectl": "1.14.0",
+    "kubectl-cmd": "1.2.5"
   }
 }

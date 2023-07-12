@@ -10,7 +10,7 @@
     "compile": "tsc --pretty",
     "deploy-k3d-cluster": "cdktf deploy k3d-cluster --auto-approve",
     "deploy-stackgres-operator": "cdktf deploy stackgres-operator --auto-approve",
-    "deploy-starrocks-operator": "cdktf deploy starrocks-operator --log-level=DEBUG --auto-approve",
+    "deploy-starrocks-operator": "cdktf deploy starrocks-operator --auto-approve",
     "destroy-k3d-cluster": "cdktf destroy k3d-cluster --auto-approve",
     "destroy-stackgres-operator": "cdktf destroy stackgres-operator --auto-approve",
     "destroy-starrocks-operator": "cdktf destroy starrocks-operator --auto-approve",

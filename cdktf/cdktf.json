@@ -15,6 +15,12 @@
       "version": "0.0.6"
     }
   ],
-  "terraformModules": [],
+  "terraformModules": [
+    {
+      "name": "kubectl-cmd",
+      "source": "magnolia-sre/kubectl-cmd/kubernetes",
+      "version": "1.2.5"
+    }
+  ],
   "context": {}
 }

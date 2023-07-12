@@ -1,12 +1,13 @@
 import { Cluster } from "../.gen/providers/k3d/cluster";
 import { Construct } from "constructs/lib/construct";
 import { DataK3DCluster } from "../.gen/providers/k3d/data-k3d-cluster";
+import { Fn, TerraformOutput, TerraformVariable } from "cdktf";
 import { K3DProvider } from "../.gen/providers/k3d/provider";
 import { Release as HelmRelease } from "@cdktf/provider-helm/lib/release";
 import { Sleep } from "@cdktf/provider-time/lib/sleep";
-import { Fn, TerraformOutput, TerraformVariable } from "cdktf";
 import { TerraformStack } from "cdktf/lib/terraform-stack";
 import { TimeProvider } from "@cdktf/provider-time/lib/provider";
+import { resolve } from "path";
 import { useHelmProvider } from "../helpers/HelmHelper";
 import { useTfVar } from "../helpers/VarHelper";
 
@@ -90,6 +91,12 @@ export default class K3dCluster extends TerraformStack {
       createNamespace: true,
       wait: true,
       waitForJobs: true,
+      postrender: {
+        binaryPath: "bash",
+        args: [
+          resolve(__dirname, "../helm-postrender/ingress-nginx/kustomize.sh"),
+        ],
+      },
     });
 
     new TerraformOutput(this, "kubeconfig", {
