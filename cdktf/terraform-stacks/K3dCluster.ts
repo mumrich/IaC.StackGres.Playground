@@ -7,9 +7,9 @@ import { Release as HelmRelease } from "@cdktf/provider-helm/lib/release";
 import { Sleep } from "@cdktf/provider-time/lib/sleep";
 import { TerraformStack } from "cdktf/lib/terraform-stack";
 import { TimeProvider } from "@cdktf/provider-time/lib/provider";
-import { resolve } from "path";
 import { useHelmProvider } from "../helpers/HelmHelper";
 import { useTfVar } from "../helpers/VarHelper";
+import * as kubectlCmd from "../.gen/modules/kubectl-cmd";
 
 export default class K3dCluster extends TerraformStack {
   constructor(scope: Construct, id: string) {
@@ -91,12 +91,18 @@ export default class K3dCluster extends TerraformStack {
       createNamespace: true,
       wait: true,
       waitForJobs: true,
-      postrender: {
-        binaryPath: "bash",
-        args: [
-          resolve(__dirname, "../helm-postrender/ingress-nginx/kustomize.sh"),
-        ],
+    });
+
+    // https://arunsworld.medium.com/ssl-passthrough-via-kubernetes-ingress-b3eaf3c7c9da
+    new kubectlCmd.KubectlCmd(this, "kubectl-cmd", {
+      app: "foo",
+      clusterName: k3dCluster.name,
+      credentials: {
+        kubeconfigPath: "~/.kube/config",
       },
+      cmds: [
+        "kubectl -n ingress-nginx patch deployment/ingress-nginx-controller --patch-file patch.yml",
+      ],
     });
 
     new TerraformOutput(this, "kubeconfig", {
