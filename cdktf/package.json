@@ -7,6 +7,7 @@
   "private": true,
   "scripts": {
     "build": "tsc",
+    "clean-install-and-cdktf-get": "npm ci && cdktf get",
     "compile": "tsc --pretty",
     "deploy-k3d-cluster": "cdktf deploy k3d-cluster --auto-approve",
     "deploy-stackgres-operator": "cdktf deploy stackgres-operator --auto-approve",
