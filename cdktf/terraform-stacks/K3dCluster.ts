@@ -1,8 +1,8 @@
-import * as kubectlCmd from "../.gen/modules/kubectl-cmd";
+// import * as kubectlCmd from "../.gen/modules/kubectl-cmd";
 import { Cluster } from "../.gen/providers/k3d/cluster";
 import { Construct } from "constructs/lib/construct";
 import { DataK3DCluster } from "../.gen/providers/k3d/data-k3d-cluster";
-import { File } from "@cdktf/provider-local/lib/file";
+// import { File } from "@cdktf/provider-local/lib/file";
 import { Fn, TerraformOutput, TerraformVariable } from "cdktf";
 import { K3DProvider } from "../.gen/providers/k3d/provider";
 import { LocalProvider } from "@cdktf/provider-local/lib/provider";
@@ -96,30 +96,30 @@ export default class K3dCluster extends TerraformStack {
       waitForJobs: true,
     });
 
-    const nginxDeploymentPatchName = "nginx-deployment-patch.yaml";
-    new File(this, nginxDeploymentPatchName, {
-      content: `apiVersion: apps/v1
-kind: Deployment
-spec:
-  template:
-    spec:
-      containers:
-        - args:
-            - --enable-ssl-passthrough
-      `,
-      filename: nginxDeploymentPatchName,
-    });
+    //     const nginxDeploymentPatchName = "nginx-deployment-patch.yaml";
+    //     new File(this, nginxDeploymentPatchName, {
+    //       content: `apiVersion: apps/v1
+    // kind: Deployment
+    // spec:
+    //   template:
+    //     spec:
+    //       containers:
+    //         - args:
+    //             - --enable-ssl-passthrough
+    //       `,
+    //       filename: nginxDeploymentPatchName,
+    //     });
 
-    new kubectlCmd.KubectlCmd(this, "kubectl-cmd", {
-      app: "foo",
-      clusterName: k3dCluster.name,
-      credentials: {
-        kubeconfigPath: "~/.kube/config",
-      },
-      cmds: [
-        `kubectl -n ingress-nginx patch deployment/ingress-nginx-controller --patch-file ${nginxDeploymentPatchName}`,
-      ],
-    });
+    //     new kubectlCmd.KubectlCmd(this, "kubectl-cmd", {
+    //       app: "foo",
+    //       clusterName: k3dCluster.name,
+    //       credentials: {
+    //         kubeconfigPath: "~/.kube/config",
+    //       },
+    //       cmds: [
+    //         `kubectl -n ingress-nginx patch deployment/ingress-nginx-controller --patch-file ${nginxDeploymentPatchName}`,
+    //       ],
+    //     });
 
     new TerraformOutput(this, "kubeconfig", {
       value: Fn.nonsensitive(datK3dCluster.kubeconfigRaw),

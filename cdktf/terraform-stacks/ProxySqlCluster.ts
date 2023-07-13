@@ -13,21 +13,16 @@ export default class ProxySqlCluster extends TerraformStack {
     useHelmProvider(this);
     new LocalProvider(this, "local-provider");
 
-    const mysqlYaml = new DataLocalFile(this, "mysql.yaml", {
-      filename: resolve(__dirname, "../helm-values/mysql.yaml"),
+    const proxySqlValues = new DataLocalFile(this, "proxysql.yaml", {
+      filename: resolve(__dirname, "../helm-values/proxysql.yaml"),
     });
 
-    new HelmRelease(this, "proxysql-db-release", {
-      name: "mysql-8",
-      chart: "mysql",
-      repository: "https://charts.bitnami.com/bitnami",
-      values: [mysqlYaml.content],
-    });
-
-    new HelmRelease(this, "proxysql-cluster-release", {
-      name: "proxysql-cluster",
+    new HelmRelease(this, "proxysql-release", {
+      chart: "proxysql",
+      name: "proxysql",
       namespace: "proxysql",
-      chart: resolve(__dirname, "../helm-charts/proxysql-cluster"),
+      repository: "https://christianknell.github.io/helm-charts",
+      values: [proxySqlValues.content],
       createNamespace: true,
       wait: true,
       waitForJobs: true,
