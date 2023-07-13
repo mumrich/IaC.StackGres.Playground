@@ -45,6 +45,7 @@ export default class StackGresOperator extends TerraformStack {
 
     const hostname = "stackgress.multikube";
 
+    // TODO HMO: not working yet
     new IngressV1(this, idPrefixer("stackgres-admin-ui-ingress"), {
       dependsOn: [helmRelase],
       metadata: {
