@@ -22,6 +22,7 @@ export default class StackGresOperator extends TerraformStack {
     useK8sProvider(this, idPrefixer("k8s-provider"));
     useHelmProvider(this, idPrefixer("helm-provider"));
 
+    // helm install --create-namespace --namespace stackgres stackgres-operator --set-string adminui.service.type=ClusterIP https://stackgres.io/downloads/stackgres-k8s/stackgres/1.5.0/helm/stackgres-operator.tgz
     const helmRelase = new HelmRelease(this, idPrefixer("helm-release"), {
       name: chartName,
       namespace: k8sNamespace,
@@ -36,14 +37,10 @@ export default class StackGresOperator extends TerraformStack {
           value: "ClusterIP",
           type: "string",
         },
-        {
-          name: "cert.resetCerts",
-          value: "true",
-          type: "auto",
-        },
       ],
       wait: true,
       waitForJobs: true,
+      skipCrds: false,
     });
 
     const hostname = "stackgress.multikube";
