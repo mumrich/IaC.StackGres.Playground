@@ -111,7 +111,8 @@ spec:
     });
 
     new kubectlCmd.KubectlCmd(this, "kubectl-cmd", {
-      app: "foo",
+      dependsOn: [waitForK3d],
+      app: "patch-ingress-nginx",
       clusterName: k3dCluster.name,
       credentials: {
         kubeconfigPath: "~/.kube/config",
