@@ -21,5 +21,7 @@ cdktf destroy <stack-name> --auto-approve
 
 ## Available TF Stacks
 
-- starrocks
-- stackgres
+- k3d-cluster
+- proxysql-cluster
+- stackgres-operator
+- starrocks-operator
