@@ -3,11 +3,11 @@
     "alwaysStrict": true,
     "declaration": true,
     "experimentalDecorators": true,
+    "forceConsistentCasingInFileNames": true,
+    "incremental": true,
     "inlineSourceMap": true,
     "inlineSources": true,
-    "lib": [
-      "es2018"
-    ],
+    "lib": ["es2018"],
     "module": "CommonJS",
     "noEmitOnError": true,
     "noFallthroughCasesInSwitch": true,
@@ -17,19 +17,13 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "resolveJsonModule": true,
+    "skipLibCheck": true,
     "strict": true,
     "strictNullChecks": true,
     "strictPropertyInitialization": true,
     "stripInternal": true,
-    "target": "ES2018",
-    "incremental": true,
-    "skipLibCheck": true
+    "target": "ES2018"
   },
-  "include": [
-    "**/*.ts"
-  ],
-  "exclude": [
-    "node_modules",
-    "cdktf.out"
-  ]
+  "include": ["**/*.ts"],
+  "exclude": ["node_modules", "cdktf.out"]
 }
