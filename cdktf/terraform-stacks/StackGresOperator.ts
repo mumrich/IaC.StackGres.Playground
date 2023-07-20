@@ -1,7 +1,7 @@
 import { Construct } from "constructs";
 import { DataKubernetesSecretV1 } from "@cdktf/provider-kubernetes/lib/data-kubernetes-secret-v1";
 import { Fn, TerraformOutput, TerraformStack } from "cdktf";
-import { IngressV1 } from "@cdktf/provider-kubernetes/lib/ingress-v1";
+// import { IngressV1 } from "@cdktf/provider-kubernetes/lib/ingress-v1";
 import { Release as HelmRelease } from "@cdktf/provider-helm/lib/release";
 import { useHelmProvider } from "../helpers/HelmHelper";
 import { useK8sProvider } from "../helpers/K8sHelper";
@@ -22,7 +22,11 @@ export default class StackGresOperator extends TerraformStack {
     useK8sProvider(this, idPrefixer("k8s-provider"));
     useHelmProvider(this, idPrefixer("helm-provider"));
 
-    // helm install --create-namespace --namespace stackgres stackgres-operator --set-string adminui.service.type=ClusterIP https://stackgres.io/downloads/stackgres-k8s/stackgres/1.5.0/helm/stackgres-operator.tgz
+    // Do NOT set these values to 'true' - this chart relies on post-install hooks, that won't get executed while waiting
+    // See https://helm.sh/docs/topics/charts_hooks/
+    const wait = false;
+    const waitForJobs = false;
+
     const helmRelase = new HelmRelease(this, idPrefixer("helm-release"), {
       name: chartName,
       namespace: k8sNamespace,
@@ -30,57 +34,50 @@ export default class StackGresOperator extends TerraformStack {
       version: chartVersion.value,
       repository:
         "https://stackgres.io/downloads/stackgres-k8s/stackgres/helm/",
-      createNamespace: true,
-      set: [
-        {
-          name: "adminui.service.type",
-          value: "ClusterIP",
-          type: "string",
-        },
-      ],
-      wait: true,
-      waitForJobs: true,
+      set: [],
+      wait,
+      waitForJobs,
       skipCrds: false,
     });
 
-    const hostname = "stackgress.multikube";
+    // const hostname = "stackgress.multikube";
 
     // TODO HMO: not working yet
-    new IngressV1(this, idPrefixer("stackgres-admin-ui-ingress"), {
-      dependsOn: [helmRelase],
-      metadata: {
-        name: "stackgress-admin-ui-ingresss",
-        namespace: k8sNamespace,
-      },
-      spec: {
-        tls: [
-          {
-            hosts: [hostname],
-          },
-        ],
-        rule: [
-          {
-            host: hostname,
-            http: {
-              path: [
-                {
-                  path: "/",
-                  pathType: "Prefix",
-                  backend: {
-                    service: {
-                      name: "stackgres-restapi",
-                      port: {
-                        number: 443,
-                      },
-                    },
-                  },
-                },
-              ],
-            },
-          },
-        ],
-      },
-    });
+    // new IngressV1(this, idPrefixer("stackgres-admin-ui-ingress"), {
+    //   dependsOn: [helmRelase],
+    //   metadata: {
+    //     name: "stackgress-admin-ui-ingresss",
+    //     namespace: k8sNamespace,
+    //   },
+    //   spec: {
+    //     tls: [
+    //       {
+    //         hosts: [hostname],
+    //       },
+    //     ],
+    //     rule: [
+    //       {
+    //         host: hostname,
+    //         http: {
+    //           path: [
+    //             {
+    //               path: "/",
+    //               pathType: "Prefix",
+    //               backend: {
+    //                 service: {
+    //                   name: "stackgres-restapi",
+    //                   port: {
+    //                     number: 443,
+    //                   },
+    //                 },
+    //               },
+    //             },
+    //           ],
+    //         },
+    //       },
+    //     ],
+    //   },
+    // });
 
     const credentials = new DataKubernetesSecretV1(
       this,

@@ -58,6 +58,12 @@ export default class K3dCluster extends TerraformStack {
           containerPort: 443,
           nodeFilters: ["loadbalancer"],
         },
+        {
+          protocol: "TCP",
+          hostPort: 5432,
+          containerPort: 5432,
+          nodeFilters: ["loadbalancer"],
+        },
       ],
       kubeconfig: {
         updateDefaultKubeconfig: true,
