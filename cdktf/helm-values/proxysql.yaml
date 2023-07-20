@@ -1,7 +1,0 @@
-ingress:
-  enabled: true
-  hosts:
-    - host: reporting.multikube
-      paths:
-        - path: /
-          pathType: ImplementationSpecific
